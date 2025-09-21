@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import SimpleIconComponent from "../../components/simple-icon";
-import { useEffect, useRef, useState } from "react";
+import { Key, useEffect, useRef, useState } from "react";
 import { 
     siNextdotjs,
     siReact,
@@ -138,7 +138,7 @@ export default function Projects() {
                                   <p className="text-sm text-foreground/80 text-ellipsis overflow-hidden max-h-10">{project.description}</p>
                                 </div>
                                 <div className="flex flex-wrap gap-2 flex-1 items-end" style={{ justifySelf: 'flex-end' }}>
-                                    {project.techstack && project.techstack.map((tech, idx) => (
+                                    {project.techstack && project.techstack.map((tech: string, idx: Key | null | undefined) => (
                                         <span key={idx} className="bg-gray-600/10 dark:bg-gray-200/10 text-foreground/80 rounded-md flex h-fit px-1 py-1 text-xs font-medium">
                                             {
                                                 tech === "React" ? <SimpleIconComponent icon={siReact} /> :

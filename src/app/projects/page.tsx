@@ -29,6 +29,11 @@ export default function Projects() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const projectRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -86,6 +91,10 @@ export default function Projects() {
   }, []);
 
   const { innerWidth } = useWindowSize();
+
+  if (!mounted) {
+    return null;
+  }
 
   if (loading) {
     return (

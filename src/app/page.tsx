@@ -10,7 +10,7 @@ import Tilt from "react-parallax-tilt";
 import blob1 from "../../public/blob1.png";
 import SimpleIconComponent from "@/components/simple-icon";
 import { siNextdotjs, siNodedotjs, siSupabase, siTailwindcss, siTypescript } from "simple-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
 const tech_stack = [
@@ -44,6 +44,12 @@ const tech_stack = [
 export default function Home() {
 
   const { theme } = useTheme();
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const parent = {
     animate: { transition: { staggerChildren: 0.25, delayChildren: 1.2 } }
@@ -58,6 +64,10 @@ export default function Home() {
       opacity: 1,
       y: 0
     }
+  }
+
+  if (!mounted) {
+    return null;
   }
 
 
@@ -137,7 +147,6 @@ export default function Home() {
           <motion.div variants={parent} initial='initial' animate='animate' className="flex flex-row gap-2.5">
             {
               tech_stack.map((tech, idx) => {
-                const [hover, setHover] = useState(false);
 
                 return(
                   <motion.div
@@ -145,14 +154,14 @@ export default function Home() {
                     variants={child}
                     whileHover={{ scale: 1.1 }}
                     className={"group tech-stack color-white bg-gray-300/10 dark:bg-gray-800/10 p-1 rounded-md flex items-center justify-center hover:color-[" + tech.color + "]"}
-                    onMouseEnter={() => setHover(true)}
-                    onMouseLeave={() => setHover(false)}
+                    onMouseEnter={() => setHoveredIndex(idx)}
+                    onMouseLeave={() => setHoveredIndex(null)}
                   >
                     <svg
                       width={24}
                       height={24}
                       viewBox="0 0 24 24"
-                      fill={hover ? tech.color : theme == 'dark' ? '#f0f0f0': "#0f0f0f99"}
+                      fill={hoveredIndex === idx ? tech.color : theme == 'dark' ? '#f0f0f0': "#0f0f0f99"}
                       xmlns="http://www.w3.org/2000/svg"
                       className={"transition-all ease-in-out duration-400 "}
                     >

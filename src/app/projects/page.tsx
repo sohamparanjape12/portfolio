@@ -47,7 +47,7 @@ export default function Projects() {
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       const projectWidth = projectRefs.current[0]?.offsetWidth || 400;
-      scrollContainerRef.current.scrollBy({
+      scrollContainerRef.current.scrollBy({ 
         left: -projectWidth,
         behavior: "smooth",
       });
@@ -57,7 +57,7 @@ export default function Projects() {
   const scrollRight = () => {
     if (scrollContainerRef.current) {
       const projectWidth = projectRefs.current[0]?.offsetWidth || 400;
-      scrollContainerRef.current.scrollBy({
+      scrollContainerRef.current.scrollBy({ 
         left: projectWidth,
         behavior: "smooth",
       });
@@ -121,7 +121,7 @@ export default function Projects() {
               {projects.map((project, index) => (
                   <motion.div 
                       key={index}
-                      ref={(el) => (projectRefs.current[index] = el)}
+                      ref={(el: HTMLDivElement | null) => { projectRefs.current[index] = el; }}
                       initial={{ opacity: 0, y: 50 }}
                       animate={{ opacity: 1, y: 0 }}
                       whileTap={{ scale: 0.95 }}

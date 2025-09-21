@@ -14,7 +14,7 @@ interface SimpleIconProps {
 
 const SimpleIconComponent: FC<SimpleIconProps> = ({ icon, size = 24, color = '#f0f0f0', isHover}) => {
   
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const { innerWidth } = useWindowSize();
 
@@ -24,7 +24,7 @@ const SimpleIconComponent: FC<SimpleIconProps> = ({ icon, size = 24, color = '#f
       width={innerWidth && innerWidth <= 478 ? 20 : size}
       height={innerWidth && innerWidth <= 478 ? 20 : size}
       viewBox="0 0 24 24"
-      fill={theme ? theme == 'dark' ? '#f0f0f0' : '#0f0f0f' : color}
+      fill={resolvedTheme ? resolvedTheme == 'dark' ? '#f0f0f0' : '#0f0f0f' : color}
       xmlns="http://www.w3.org/2000/svg"
       className={"transition-all ease-in-out duration-400"}
     >

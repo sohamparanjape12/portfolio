@@ -102,7 +102,7 @@ function ProjectsView({ projects }: { projects: any[] }) {
                             <div className="p-4 pt-3 flex flex-col flex-1 mb-0">
                                 <div className="flex flex-col gap-0 mb-2.5 flex-0">
                                   <h3 className="text-xl font-semibold">{project.name}</h3>
-                                  <p className="text-sm text-foreground/80 text-ellipsis overflow-hidden max-h-10">{project.description}</p>
+                                  <p className="text-sm text-foreground/80 text-ellipsis overflow-hidden">{project.description}</p>
                                 </div>
                                 <div className="flex flex-wrap gap-2 flex-1 items-end" style={{ justifySelf: 'flex-end' }}>
                                     {project.techstack && project.techstack.map((tech: string, idx: Key | null | undefined) => (

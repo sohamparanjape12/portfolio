@@ -85,7 +85,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.7 }}
             >
               <Link
-                href="https://www.linkedin.com/in/soham-paranjape-982b001b4/"
+                href="https://www.linkedin.com/in/soham-paranjape-8b2473374/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 hover:text-blue-300 hover:underline transition-colors duration-300"
@@ -99,7 +99,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.6 }}
             >
               <Link
-                href="https://github.com/sohamparanjape"
+                href="https://github.com/sohamparanjape12"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-500 hover:text-gray-200 hover:underline transition-colors duration-300"

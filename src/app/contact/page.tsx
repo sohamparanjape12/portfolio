@@ -12,22 +12,17 @@ import { url } from 'inspector';
 const links = [
     {
         label: "GitHub",
-        url: "https://github.com/sohamparanjape",
+        url: "https://github.com/sohamparanjape12",
         icon: <Github className='w-4 h-4' />
     },
     {
         label: "LinkedIn",
-        url: "https://www.linkedin.com/in/soham-paranjape-982b001b4/",
+        url: "https://www.linkedin.com/in/soham-paranjape-8b2473374/",
         icon: <Linkedin className='w-4 h-4' />
     },
     {
-        label: "Twitter",
-        url: "https://twitter.com/sohamparanjape",
-        icon: <Twitter className='w-4 h-4' />
-    },
-    {
         label: "Instagram",
-        url: "https://www.instagram.com/sohamparanjape/",
+        url: "https://www.instagram.com/sohammm.12/",
         icon: <Instagram className='w-4 h-4' />
     },
     {

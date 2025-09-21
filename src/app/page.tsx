@@ -1,103 +1,170 @@
+"use client";
+
 import Image from "next/image";
+import profilePic from "../../public/profile.jpeg";
+import { Github, Linkedin } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import Tilt from "react-parallax-tilt";
+import blob1 from "../../public/blob1.png";
+import SimpleIconComponent from "@/components/simple-icon";
+import { siNextdotjs, siNodedotjs, siSupabase, siTailwindcss, siTypescript } from "simple-icons";
+import { useState } from "react";
+import { useTheme } from "next-themes";
+
+const tech_stack = [
+  {
+    name: "Next.js",
+    icon: siNextdotjs,
+    color: "#1b1b1bff"
+  },
+  {
+    name: "TypeScript",
+    icon: siTypescript,
+    color: "#3178C6"
+  },
+  {
+    name: "Tailwind CSS",
+    icon: siTailwindcss,
+    color: "#06B6D4"
+  },
+  {
+    name: "Node.js",
+    icon: siNodedotjs,
+    color: "#5FA04E"
+  },
+  {
+    name: "Supabase",
+    icon: siSupabase,
+    color: "#3FCF8E"
+  }
+]
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const { theme } = useTheme();
+
+  const parent = {
+    animate: { transition: { staggerChildren: 0.25, delayChildren: 1.2 } }
+  }
+
+  const child = {
+    initial: {
+      opacity: 0,
+      y: 10
+    },
+    animate: {
+      opacity: 1,
+      y: 0
+    }
+  }
+
+
+  return (
+    <div className="bg-background/05 backdrop-blur-xl flex flex-col items-center justify-center min-h-screen p-8 lg:pb-20 gap-16 pb-24">
+      <div className="flex flex-col-reverse lg:flex-row items-center justify-between h-full w-full max-w-4xl gap-8 sm:gap-16">
+        <div className="text-left h-full flex flex-col items-start justify-between gap-8">
+          <div className="space-y-1">
+            <motion.h1 className="text-5xl font-bold" initial={{ opacity: 0, x: -100 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>Full Stack Developer</motion.h1>
+            <motion.p 
+              className="text-md text-foreground/80 max-w-lg"
+              initial={{ opacity: 0, x: -100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              style={{ lineHeight: "1" }}
+            >
+              Hi, I am <span className="shiny-text p-0 m-0 pl-1 text-lg" style={{ fontFamily: "Space Grotesk", fontWeight: "bold" }}>Soham Paranjape</span>, a passionate full stack developer who loves building web applications and exploring new technologies. 
+            </motion.p>
+          </div>
+          <div className="flex flex-row items-center justify-start space-x-4 mx-2">
+            <motion.div 
+              initial={{ opacity: 0, x: -100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+            >
+              <Link
+                href="https://www.linkedin.com/in/soham-paranjape-982b001b4/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:text-blue-300 hover:underline transition-colors duration-300"
+              >
+                <Linkedin size={26} />
+              </Link>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, x: -100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              <Link
+                href="https://github.com/sohamparanjape"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-500 hover:text-gray-200 hover:underline transition-colors duration-300"
+              >
+                <Github size={26} />
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+        <Tilt tiltMaxAngleX={4} tiltMaxAngleY={4} perspective={1000} glareEnable glareColor="#f0f0f0" glareBorderRadius="15px" glareMaxOpacity={0.25} glarePosition="all" tiltReverse>
+          <motion.div
+            initial={{ opacity: 0, }}
+            animate={{ opacity: 1, }}
+            transition={{ duration: 0.5, delay: 1 }}
           >
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src={profilePic}
+              alt="Profile Picture"
+              width={200}
+              height={200}
+              className="rounded-lg aspect-square object-cover w-38 h-38 sm:w-42 sm:h-42 md:w-54 md:h-54 lg:w-62 lg:h-62 xl:w-70 xl:h-70"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </motion.div>
+        </Tilt>
+        <div
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center gap-1.5"
+        >
+          <motion.h3
+            initial={{ opacity: 0, }}
+            animate={{ opacity: 1, }}
+            transition={{ duration: 0.5, delay: 1 }}
+            className="text-lg font-semibold text-gray-600/80 dark:text-gray-200/80"
           >
-            Read our docs
-          </a>
+            Tech Stack
+          </motion.h3>
+          <motion.div variants={parent} initial='initial' animate='animate' className="flex flex-row gap-2.5">
+            {
+              tech_stack.map((tech, idx) => {
+                const [hover, setHover] = useState(false);
+
+                return(
+                  <motion.div
+                    key={idx}
+                    variants={child}
+                    whileHover={{ scale: 1.1 }}
+                    className={"group tech-stack color-white bg-gray-300/10 dark:bg-gray-800/10 p-1 rounded-md flex items-center justify-center hover:color-[" + tech.color + "]"}
+                    onMouseEnter={() => setHover(true)}
+                    onMouseLeave={() => setHover(false)}
+                  >
+                    <svg
+                      width={24}
+                      height={24}
+                      viewBox="0 0 24 24"
+                      fill={hover ? tech.color : theme == 'dark' ? '#f0f0f0': "#0f0f0f99"}
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={"transition-all ease-in-out duration-400 "}
+                    >
+                      <path d={tech.icon.path} />
+                    </svg>
+                  </motion.div>
+                )
+              
+            })}
+          </motion.div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }

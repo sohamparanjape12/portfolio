@@ -10,7 +10,7 @@ import Tilt from "react-parallax-tilt";
 import blob1 from "../../public/blob1.png";
 import SimpleIconComponent from "@/components/simple-icon";
 import { siNextdotjs, siNodedotjs, siSupabase, siTailwindcss, siTypescript } from "simple-icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTheme } from "next-themes";
 
 const tech_stack = [
@@ -43,13 +43,8 @@ const tech_stack = [
 
 export default function Home() {
 
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const parent = {
     animate: { transition: { staggerChildren: 0.25, delayChildren: 1.2 } }
@@ -64,10 +59,6 @@ export default function Home() {
       opacity: 1,
       y: 0
     }
-  }
-
-  if (!mounted) {
-    return null;
   }
 
 
@@ -161,7 +152,7 @@ export default function Home() {
                       width={24}
                       height={24}
                       viewBox="0 0 24 24"
-                      fill={hoveredIndex === idx ? tech.color : theme == 'dark' ? '#f0f0f0': "#0f0f0f99"}
+                      fill={hoveredIndex === idx ? tech.color : resolvedTheme == 'dark' ? '#f0f0f0': "#0f0f0f99"}
                       xmlns="http://www.w3.org/2000/svg"
                       className={"transition-all ease-in-out duration-400 "}
                     >

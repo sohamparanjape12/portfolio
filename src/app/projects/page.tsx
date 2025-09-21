@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
 import Image from "next/image";
 import SimpleIconComponent from "../../components/simple-icon";
 import { Key, useEffect, useRef, useState } from "react";
@@ -23,31 +23,22 @@ import Link from 'next/link';
 import useWindowSize from "@rooks/use-window-size";
 import { supabase } from "@/lib/supabase";
 
-export default function Projects() {
+function ProjectsView({ projects }: { projects: any[] }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [currentProject, setCurrentProject] = useState(0);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const projectRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [mounted, setMounted] = useState(false);
+  const { scrollXProgress } = useScroll({ container: scrollContainerRef });
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      const { data, error } = await supabase.from('projects').select('*');
-      if (error) {
-        console.error('Error fetching projects:', error);
-      } else {
-        setProjects(data);
+    const unsubscribe = scrollXProgress.on("change", (latest) => {
+      const numProjects = projects.length;
+      if (numProjects > 0) {
+        const activeProject = Math.round(latest * (numProjects - 1));
+        setCurrentProject(activeProject);
       }
-      setLoading(false);
-    };
-
-    fetchProjects();
-  }, []);
+    });
+    return () => unsubscribe();
+  }, [scrollXProgress, projects]);
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -69,40 +60,7 @@ export default function Projects() {
     }
   };
 
-  const handleScroll = () => {
-    if (scrollContainerRef.current && projectRefs.current.length > 0) {
-      const scrollLeft = scrollContainerRef.current.scrollLeft;
-      const projectWidth = projectRefs.current[0]?.offsetWidth || 400;
-      const currentIndex = Math.round(scrollLeft / (projectWidth + 32)); // 32 is the gap
-      setCurrentProject(currentIndex);
-    }
-  };
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener("scroll", handleScroll);
-    }
-    return () => {
-      if (scrollContainer) {
-        scrollContainer.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
-
   const { innerWidth } = useWindowSize();
-
-  if (!mounted) {
-    return null;
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
-      </div>
-    )
-  }
 
   return (
     <div className="bg-background/05 backdrop-blur-xl flex flex-col items-center justify-center min-h-screen p-8 pb-20 gap-4 sm:p-20 z-10">
@@ -216,4 +174,33 @@ export default function Projects() {
         </div>
     </div>
   )
+}
+
+export default function Projects() {
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const { data, error } = await supabase.from('projects').select('*');
+      if (error) {
+        console.error('Error fetching projects:', error);
+      } else {
+        setProjects(data);
+      }
+      setLoading(false);
+    };
+
+    fetchProjects();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p>Loading...</p>
+      </div>
+    )
+  }
+
+  return <ProjectsView projects={projects} />
 }

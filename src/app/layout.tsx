@@ -118,7 +118,7 @@ export default function RootLayout({
                 repeatType: "reverse",
                 delay: 5,
               }}
-                className={cn(path == '/projects' ? "absolute -top-1/2 left-0 top-50 lg:top-0 lg:left-0 transform -rotate-60 lg:rotate-20 scale-320 lg:scale-150 transition-all ease duration-1500 -z-10 object-cover blur-xl opacity-100 -hue-rotate-5" : path == '/contact' ? "absolute -top-1/2 -left-45 top-60 left-0 lg:top-0 lg:left-0 transform -rotate-20 transition-all duration-1500 -z-10 object-cover blur-xl opacity-100 scale-300 lg:scale-250 saturate-90" : "absolute -top-100 transition-all ease duration-1500 -z-10 object-cover blur-xl opacity-0"
+                className={cn(path == '/projects' ? "absolute -top-1/2 left-0 top-30 lg:top-0 lg:left-0 transform -rotate-60 lg:rotate-20 scale-320 lg:scale-150 transition-all ease duration-1500 -z-10 object-cover blur-xl opacity-100 -hue-rotate-5" : path == '/contact' ? "absolute -top-1/2 -left-45 top-40 left-0 lg:top-0 lg:left-0 transform -rotate-20 transition-all duration-1500 -z-10 object-cover blur-xl opacity-100 scale-300 lg:scale-250 saturate-90" : "absolute -top-100 transition-all ease duration-1500 -z-10 object-cover blur-xl opacity-0"
                 )}
             >
               <Image

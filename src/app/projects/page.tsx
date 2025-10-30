@@ -16,12 +16,17 @@ import {
     siVuedotjs,
     siDjango,
     siSupabase,
+    siTauri,
+    siRust,
  } from "simple-icons";
 import { ChevronLeft, ChevronRight, Github, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 import useWindowSize from "@rooks/use-window-size";
 import { supabase } from "@/lib/supabase";
+import linkstack from '../../../public/linkstack.png';
+import digifolio from '../../../public/digifolio.png';
+import gtamm from '../../../public/gtamm.png';
 
 function ProjectsView({ projects }: { projects: any[] }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -118,6 +123,8 @@ function ProjectsView({ projects }: { projects: any[] }) {
                                                 tech === "Vue.js" ? <SimpleIconComponent icon={siVuedotjs} /> :
                                                 tech === "Django" ? <SimpleIconComponent icon={siDjango} /> :
                                                 tech === "Supabase" ? <SimpleIconComponent icon={siSupabase} /> :
+                                                tech === "Tauri" ? <SimpleIconComponent icon={siTauri} /> :
+                                                tech === "Rust" ? <SimpleIconComponent icon={siRust} /> :
                                                 null
                                             }
                                         </span>
@@ -180,13 +187,22 @@ export default function Projects() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const backupProjects = [{"idx":0,"id":1,"created_at":"2025-09-21 07:08:44.343367+00","name":"LinkStack","description":"A modern link-in-bio web application that allows users to create a personalized landing page with multiple links, social media integration, and customizable themes.","link":"https://linkstack-sp.vercel.app/","image":linkstack,"github":"https://github.com/sohamparanjape12/LinkStack","techstack":["Next.js","TypeScript","Tailwind CSS","Node.js","Supabase"]},
+    {"idx":1,"id":2,"created_at":"2025-09-21 07:08:44.343367+00","name":"DigiFolio","description":"A Smart Student Hub that centralises academic resources, project showcases, and networking opportunities for students.","link":"","image":digifolio,"github":null,"techstack":["Next.js","TypeScript","Tailwind CSS","Node.js","Supabase"]},
+    {"idx":2,"id":3,"created_at":"2025-10-27 18:30:00+00","name":"GTA V Mod Manager","description":"A fast, modern mod manager for Grand Theft Auto V, supporting instant drag-and-drop installation of add-on mods. Handles RPF patching, dlclist.xml edits, and organizes mods with a clean UI.","link":"https://github.com/sohamparanjape12/gta-v-mod-manager","image":gtamm,"github":"https://github.com/sohamparanjape12/gta-v-mod-manager","techstack":["Tauri","React","Rust","TypeScript","Tailwind CSS"]}]
+
   useEffect(() => {
     const fetchProjects = async () => {
       const { data, error } = await supabase.from('projects').select('*');
       if (error) {
+        setProjects(backupProjects);
         console.error('Error fetching projects:', error);
       } else {
-        setProjects(data);
+        if (data.length > 0) {
+          setProjects(data);
+        } else {
+          setProjects(backupProjects);
+        }
       }
       setLoading(false);
     };

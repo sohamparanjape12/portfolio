@@ -10,7 +10,8 @@ const nextConfig: NextConfig = {
         pathname: '/storage/v1/object/public/projects/project_images/**',
       },
     ],
-  }
+  },
+  allowedDevOrigins: ['192.168.29.169'],
 };
 
 export default nextConfig;

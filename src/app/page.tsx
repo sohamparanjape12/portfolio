@@ -578,13 +578,13 @@ export default function Home() {
       </section>
 
       {/* ── ABOUT ─────────────────────────────────────────────────────────── */}
-      <section id="about" ref={aboutRef} className="min-h-[90vh] max-w-7xl mx-auto px-6 py-32">
+      <section id="about" ref={aboutRef} className="min-h-[90vh] max-w-7xl mx-auto px-6 py-24 md:py-32">
         <div className="grid grid-cols-1 md:grid-cols-7 gap-12 md:h-[65vh] h-auto">
 
           {/* Left col */}
-          <div className="flex flex-col justify-between md:h-full h-auto md:col-span-2 pt-8">
+          <div className="flex flex-col justify-between md:h-full h-auto md:col-span-2 pt-0 md:pt-8 gap-8 md:gap-0">
             <Reveal triggerRef="#about" triggerStart="top 50%" delay={0}>
-              <h2 className="text-[clamp(2rem,4vw,2.8rem)] tracking-tighter mb-12" style={{ fontFamily: "var(--font-inter), system-ui, sans-serif", fontWeight: 600 }}>Hey!</h2>
+              <h2 className="text-[clamp(2rem,4vw,2.8rem)] tracking-tighter md:mb-12" style={{ fontFamily: "var(--font-inter), system-ui, sans-serif", fontWeight: 600 }}>Hey!</h2>
             </Reveal>
             <TextReveal
               className="text-lg md:text-xl font-medium tracking-normal leading-normal font-inter "
@@ -599,17 +599,17 @@ export default function Home() {
             </TextReveal>
           </div>
 
-          <div ref={imgRef} className="md:col-span-3 flex items-end justify-center">
-            <div className="rounded-md aspect-[4/5] md:h-[480px] h-[320px] relative overflow-hidden">
+          <div ref={imgRef} className="md:col-span-3 flex items-center md:items-end justify-center w-full">
+            <div className="rounded-md aspect-[4/5] w-[80%] max-w-[320px] md:w-auto md:max-w-none md:h-[480px] relative overflow-hidden">
               <img src={"/sunrise.jpeg"} alt="About Image"
-                className="about-image rounded-md object-contain absolute"
+                className="about-image rounded-md object-cover absolute inset-0 w-full h-full"
                 style={{ filter: "sepia(45%) saturate(65%) hue-rotate(5deg) brightness(77%)" }}
               />
             </div>
           </div>
 
           {/* Right col */}
-          <div className="flex flex-col justify-end md:h-full h-auto md:col-span-2">
+          <div className="flex flex-col justify-end md:h-full h-auto md:col-span-2 md:mt-0">
             <TextReveal
               className="text-md md:text-md font-light tracking-normal leading-tight font-mona-sans"
               duration={0.9}
@@ -656,7 +656,7 @@ export default function Home() {
           Featured Projects
         </TextReveal>
 
-        <div className="grid md:grid-cols-2 gap-12 gap-y-4 mt-16">
+        <div className="grid md:grid-cols-2 md:gap-12 gap-4 mt-12 md:mt-16">
           {PROJECTS.map((p, i) => (
             <ProjectCard
               key={p.id}

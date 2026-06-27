@@ -43,6 +43,7 @@ const PROJECTS = [
     desc: "Static website for Paranjape Opticals with custom animations and smooth scrolling.",
     tech: ["Next.js", "TailwindCSS", "Framer Motion"],
     year: "2025",
+    link: "https://www.paranjapeopticals.com",
     img: "/po.png"
   },
   {
@@ -323,7 +324,7 @@ const ProjectCard = ({ project, index }: {
   }, { scope: cardRef, dependencies: [theme] });
 
   return (
-    <Reveal key={index} duration={0.8} ease="power3.out" delay={0.4 + index * 0.25} triggerStart="top 80%">
+    <Reveal key={index} duration={0.8} ease="power3.out" delay={0.1 + index * 0.25} triggerStart="top 80%">
       <div
         ref={cardRef}
         onClick={() => {
@@ -340,7 +341,7 @@ const ProjectCard = ({ project, index }: {
               src={project.img}
               alt={project.name}
               fill
-              className="object-cover object-top hue-rotate-[-5deg] brightness-[77%] saturate-[80%] sepia-[20%] group-hover:filter-none transition-all duration-400 delay-450"
+              className="object-cover object-top dark:hue-rotate-[-5deg] brightness-[77%] saturate-[80%] dark:sepia-[20%] group-hover:filter-none transition-all duration-400 delay-450"
             />
           </div>
         </div>
@@ -524,7 +525,7 @@ export default function Home() {
               stagger={0.05}
               duration={1.2}
               ease="power3.out"
-              className="block text-[clamp(4rem,10vw,6.5rem)] font-semibold text-foreground tracking-tighter leading-[0.77] font-inter"
+              className="block text-[clamp(4rem,10vw,6.5rem)] font-semibold text-foreground tracking-[-0.08em] leading-[0.77] font-inter"
               byLetter
             >
               Soham
@@ -536,7 +537,7 @@ export default function Home() {
               stagger={0.04}
               duration={1.2}
               ease="power3.out"
-              className="block text-[clamp(4rem,10vw,6.5rem)] font-normal text-foreground tracking-tighter leading-[0.95] font-inter"
+              className="block text-[clamp(4rem,10vw,6.5rem)] font-normal text-foreground tracking-[-0.08em] leading-[0.95] font-inter"
               byLetter
             >
               Paranjape
@@ -631,16 +632,12 @@ export default function Home() {
               </span>
               Google Developer Groups MIT-WPU Pune. I work on full stack web applications using
               {
-                ["Next.js", "Typescript", "TailwindCSS", "PostgreSQL", "Framer Motion", "Node.js", "GSAP"].map((tech, i) => (
-                  <Fragment key={tech}>
-                    <span className="inline-flex dark:bg-zinc-800 bg-zinc-200 dark:text-zinc-100 text-zinc-800 px-2.5 py-1 rounded-full text-sm font-medium my-0.5">
-                      {tech}
-                    </span>
-                    <span>
-                      {i < 6 && ", "}
-                    </span>
-                  </Fragment>
-                ))
+                ["Next.js", "Typescript", "TailwindCSS", "PostgreSQL", "Framer Motion", "Node.js", "GSAP"].flatMap((tech, i) => [
+                  <span key={tech} className="tech-pill no-reveal inline-flex dark:bg-zinc-800 bg-zinc-200 dark:text-zinc-100 text-zinc-800 px-2.5 py-1 rounded-full text-sm font-medium mr-[0.25em] align-middle pb-[0.1em] my-0.5">
+                    {tech}
+                  </span>,
+                  i < 6 ? <span key={`${tech}-comma`}>{", "}</span> : null
+                ])
               }. Interested in learning new technologies and expanding my skillset.
 
             </TextReveal>

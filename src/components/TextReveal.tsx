@@ -45,29 +45,35 @@ export default function TextReveal({
                     : triggerRef.current)
                 : containerRef.current;
 
-            gsap.fromTo(
-                containerRef.current.querySelectorAll(".reveal-node"),
-                {
-                    y: "200%"
-                },
-                {
-                    y: "0%",
-                    duration: duration,
-                    delay: delay,
-                    ease: ease,
-                    stagger: stagger,
-                    scrollTrigger: {
-                        trigger: trigger,
-                        start: triggerStart,
-                        // play on enter, do nothing on leave/re-enter/leave-back
-                        toggleActions: "play none none none",
-                        // Crucial: Tells ScrollTrigger to completely turn off and kill itself once triggered
-                        once: true,
-                        // Prevents layout shifting during scroll adjustments from resetting values
-                        invalidateOnRefresh: false,
-                    },
+            const nodes = gsap.utils.toArray(".reveal-node, .tech-pill", containerRef.current) as HTMLElement[];
+
+            const tl = gsap.timeline({
+                delay: delay,
+                scrollTrigger: {
+                    trigger: trigger,
+                    start: triggerStart,
+                    toggleActions: "play none none none",
+                    once: true,
+                    invalidateOnRefresh: false,
                 }
-            );
+            });
+
+            nodes.forEach((node, i) => {
+                const isTechPill = node.classList.contains("tech-pill");
+                if (isTechPill) {
+                    tl.fromTo(node,
+                        { scale: 0, opacity: 0, rotate: -10 },
+                        { scale: 1, opacity: 1, rotate: 0, duration: 0.35, ease: "back.inOut" },
+                        i * stagger
+                    );
+                } else {
+                    tl.fromTo(node,
+                        { y: "200%" },
+                        { y: "0%", duration: duration, ease: ease },
+                        i * stagger
+                    );
+                }
+            });
         },
         // REMOVED 'children' from dependencies. 
         // This stops GSAP from re-running the animation loop if React re-renders the DOM nodes on scroll.
@@ -136,6 +142,13 @@ export default function TextReveal({
             }
 
             if (isValidElement(child)) {
+                // @ts-ignore
+                const hasNoReveal = typeof child.props?.className === 'string' && child.props.className.includes("no-reveal");
+
+                if (hasNoReveal) {
+                    return child;
+                }
+
                 return (
                     <span className="relative inline-block overflow-hidden mr-[0.25em] align-middle pb-[0.1em]">
                         <span className="reveal-node inline-block will-change-transform">

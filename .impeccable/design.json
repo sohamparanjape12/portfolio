@@ -1,0 +1,133 @@
+﻿{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-26T01:16:00+05:30",
+  "title": "Design System: Soham Paranjape Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "ink-near-black":   { "role": "primary",  "displayName": "Ink Near-Black",  "canonical": "#050505", "tonalRamp": ["#050505","#141414","#242424","#383838","#555555","#757575","#A0A0A0","#D4D4D4"] },
+      "paper-near-white": { "role": "neutral",   "displayName": "Paper Near-White","canonical": "#FAF9F6", "tonalRamp": ["#1A1A18","#2E2E2C","#474745","#646462","#8A8A88","#B4B4B2","#D8D8D6","#FAF9F6"] },
+      "ink-warm":         { "role": "primary",   "displayName": "Ink Warm",        "canonical": "#F5F0E8", "tonalRamp": ["#2A2822","#45423A","#635F56","#888278","#AEA89E","#CEC9C0","#E5E1DB","#F5F0E8"] },
+      "muted-warm":       { "role": "neutral",   "displayName": "Muted Warm",      "canonical": "#D1CEC9", "tonalRamp": ["#1C1B19","#332F2C","#4D4A47","#6B6764","#8C8884","#AEAAA7","#C8C5C1","#D1CEC9"] },
+      "stone":            { "role": "neutral",   "displayName": "Stone",           "canonical": "#92908B", "tonalRamp": ["#161614","#282825","#3D3D3A","#565450","#706E6A","#92908B","#B2B0AB","#D2D0CB"] },
+      "emerald-grid":     { "role": "infrastructure", "displayName": "Emerald Grid (DO NOT USE AS ACCENT)", "canonical": "#10B981", "tonalRamp": ["#022C22","#064E3B","#065F46","#047857","#059669","#10B981","#34D399","#6EE7B7"] }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display",  "purpose": "Hero name mark only. Never on more than one element per page." },
+      "headline": { "displayName": "Headline", "purpose": "Contact section statement. One structural heading per page that carries full weight." },
+      "body":     { "displayName": "Body",     "purpose": "All prose. Max 65ch. text-wrap: pretty on multi-line." },
+      "label":    { "displayName": "Label",    "purpose": "Nav, metadata, tags, section dates. Uppercase + 0.15em tracking. Use sparingly — ≤5 elements per viewport." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-out-expo",  "value": "cubic-bezier(0.23, 1, 0.32, 1)",   "purpose": "Primary easing for all reveals, hovers, and entrance animations. High-fidelity ease-out-expo." },
+      { "name": "ease-ios-drawer","value": "cubic-bezier(0.32, 0.72, 0, 1)",   "purpose": "Accordion expand/collapse. iOS-class drawer physics — fast in, slow out." },
+      { "name": "duration-fast",  "value": "200ms",   "purpose": "State transitions: color, opacity, border-color changes." },
+      { "name": "duration-std",   "value": "400ms",   "purpose": "Hover motion: x-translate, scale on project rows." },
+      { "name": "duration-slow",  "value": "600ms",   "purpose": "Entrance reveals: y + opacity, hero, section entries." },
+      { "name": "duration-hero",  "value": "900–1200ms", "purpose": "Hero display-name clip reveal. The longest duration on page; earns its pace by being the first motion seen." }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "480px" },
+      { "name": "md", "value": "768px" },
+      { "name": "max-content", "value": "1024px", "note": "max-w-5xl — the content container ceiling." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action Link",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Text-link CTA. Uppercase tracked label with bottom-border affordance. No background, no radius.",
+      "html": "<a href=\"#\" class=\"ds-btn-primary\">View Work</a>",
+      "css": ".ds-btn-primary { font-size: 0.6875rem; font-family: 'OverusedGrotesk', system-ui, sans-serif; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; color: var(--foreground); border-bottom: 1px solid var(--border); padding-bottom: 2px; text-decoration: none; display: inline-block; transition: color 200ms cubic-bezier(0.23,1,0.32,1), border-color 200ms cubic-bezier(0.23,1,0.32,1), transform 200ms cubic-bezier(0.23,1,0.32,1); } .ds-btn-primary:hover { color: var(--accent); border-color: var(--accent); transform: translateY(-2px); }"
+    },
+    {
+      "name": "Ghost Link",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Secondary text link. No border at rest, arrow suffix. Used for external / supplementary actions.",
+      "html": "<a href=\"#\" class=\"ds-btn-ghost\">Get in touch ↗</a>",
+      "css": ".ds-btn-ghost { font-size: 0.6875rem; font-family: 'OverusedGrotesk', system-ui, sans-serif; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; color: var(--foreground-dim); text-decoration: none; display: inline-block; transition: color 200ms cubic-bezier(0.23,1,0.32,1), transform 200ms cubic-bezier(0.23,1,0.32,1); } .ds-btn-ghost:hover { color: var(--accent); transform: translateX(3px); }"
+    },
+    {
+      "name": "Tag / Chip",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "Tech tag pill. Border-only, no fill. Pill radius. Used in project accordion and skills.",
+      "html": "<span class=\"ds-tag\">Next.js</span>",
+      "css": ".ds-tag { display: inline-block; padding: 4px 12px; font-size: 0.625rem; font-family: 'OverusedGrotesk', system-ui, sans-serif; letter-spacing: 0.15em; text-transform: uppercase; color: var(--foreground-dim); border: 1px solid var(--border); border-radius: 9999px; background: transparent; cursor: default; user-select: none; transition: border-color 200ms cubic-bezier(0.23,1,0.32,1), color 200ms cubic-bezier(0.23,1,0.32,1), transform 200ms cubic-bezier(0.23,1,0.32,1); } .ds-tag:hover { border-color: var(--accent); color: var(--foreground); transform: scale(1.05); }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Top navigation anchor. Label style, color: stone at rest.",
+      "html": "<a href=\"#work\" class=\"ds-nav-link\">Work</a>",
+      "css": ".ds-nav-link { font-size: 0.625rem; font-family: 'OverusedGrotesk', system-ui, sans-serif; letter-spacing: 0.15em; text-transform: uppercase; color: var(--foreground-dim); text-decoration: none; transition: color 200ms cubic-bezier(0.23,1,0.32,1), transform 200ms cubic-bezier(0.23,1,0.32,1); } .ds-nav-link:hover { color: var(--accent); transform: translateY(-2px); }"
+    },
+    {
+      "name": "Divider",
+      "kind": "custom",
+      "description": "1px horizontal rule. The sole structural separator — border-color only.",
+      "html": "<div class=\"ds-divider\"></div>",
+      "css": ".ds-divider { width: 100%; height: 1px; background-color: var(--border); }"
+    },
+    {
+      "name": "Project Row",
+      "kind": "custom",
+      "description": "Accordion row for project listing. Expands to reveal description, tags, and image.",
+      "html": "<div class=\"ds-project-row\"><div class=\"ds-project-row__header\"><div class=\"ds-project-row__left\"><span class=\"ds-project-row__id\">01</span><h3 class=\"ds-project-row__name\">CDCS Platform</h3></div><div class=\"ds-project-row__right\"><span class=\"ds-project-row__year\">2026</span><span class=\"ds-project-row__toggle\">+</span></div></div></div>",
+      "css": ".ds-project-row { cursor: pointer; } .ds-project-row__header { display: flex; align-items: center; justify-content: space-between; padding: 2.25rem 0; gap: 1.5rem; transition: transform 400ms cubic-bezier(0.23,1,0.32,1); } .ds-project-row:hover .ds-project-row__header { transform: translateX(10px); } .ds-project-row__left { display: flex; align-items: baseline; gap: 2rem; } .ds-project-row__id { font-family: 'OverusedGrotesk', monospace; font-size: 0.625rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--foreground); opacity: 0.3; } .ds-project-row__name { font-family: 'Satoshi', system-ui, sans-serif; font-size: clamp(1.25rem, 3vw, 2.25rem); font-weight: 600; letter-spacing: -0.02em; color: var(--foreground); opacity: 0.9; } .ds-project-row:hover .ds-project-row__name { opacity: 1; } .ds-project-row__right { display: flex; align-items: center; gap: 2rem; } .ds-project-row__year { font-family: 'OverusedGrotesk', monospace; font-size: 0.625rem; letter-spacing: 0.15em; color: var(--foreground); opacity: 0.3; } .ds-project-row__toggle { font-size: 1.125rem; color: var(--foreground); opacity: 0.4; transition: transform 300ms cubic-bezier(0.23,1,0.32,1); } .ds-project-row:hover .ds-project-row__toggle { opacity: 0.7; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Night Blueprint",
+    "overview": "This system is dark-native, precise, and spatial — like engineering drawings exhibited in a gallery. Every decision earns its place through geometry, not decoration. The dominant surface is near-black (#050505); type is warm off-white (#F5F0E8). A hairline emerald grid traces the blueprint metaphor without announcing it: background infrastructure, not foreground decoration.\n\nThe motion language is cinematic and technical: scroll-driven parallax, accordion reveals with iOS-class easing, GSAP-level orchestration, and Locomotive Scroll smoothness as the ambient layer. Animations are structural — they carry information about hierarchy, sequence, and space.\n\nThis system explicitly rejects: editorial/brutalist aesthetics, cream backgrounds, glassmorphism, hero-metric templates, identical card grids, hand-drawn SVG, and numbered section scaffolding.",
+    "keyCharacteristics": [
+      "Dark-native dual theme (near-black default)",
+      "Satoshi display + OverusedGrotesk body — Grotesque authority",
+      "Blueprint grid infrastructure (emerald at ~1% opacity)",
+      "Flat elevation: depth through scale and whitespace, never shadow",
+      "Custom cursor as a craft signal",
+      "Accordion-based project rows — no card grids",
+      "Motion is material: every animation is load-bearing"
+    ],
+    "rules": [
+      { "name": "The Emerald Embargo Rule", "body": "The emerald grid color (#10B981) is background infrastructure only. Never use it as an accent, link, button color, or interactive signal.", "section": "colors" },
+      { "name": "The One Temperature Rule", "body": "All colors are warm-tinted. Do not introduce cool-tinted neutrals without explicit justification.", "section": "colors" },
+      { "name": "The Grotesque Unity Rule", "body": "Satoshi and OverusedGrotesk are two registers of one voice. Do not introduce a serif, script, or second geometric sans.", "section": "typography" },
+      { "name": "The Label Economy Rule", "body": "Uppercase tracked labels at 0.15em / 0.625rem are used sparingly. If they appear on more than 5 elements per viewport, reduce.", "section": "typography" },
+      { "name": "The Display Floor Rule", "body": "Display letter-spacing never goes below -0.04em. Current target: -0.03em.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "No box-shadow at rest. Shadow is a state-change response only — and even then, prefer border-color shift over shadow.", "section": "elevation" },
+      { "name": "The One Glass Rule", "body": "backdrop-filter: blur() is used exactly once: the scrolled nav. Any second instance requires explicit justification.", "section": "elevation" }
+    ],
+    "dos": [
+      "Use dark mode as the primary/default theme",
+      "Keep emerald grid at opacity ≤ 3% as background infrastructure only",
+      "Use Satoshi for display/headings and OverusedGrotesk for body/labels",
+      "Keep letter-spacing ≥ -0.04em on all display headings",
+      "Cap display clamp() max at 6rem",
+      "Use text-wrap: pretty on all multi-line body paragraphs",
+      "Keep elevation flat at rest — no decorative shadows",
+      "Use prefers-reduced-motion on every animation",
+      "Limit uppercase tracked labels to ≤5 elements per viewport",
+      "Use accordion rows (not card grids) for project listings"
+    ],
+    "donts": [
+      "Don't use the emerald grid color (#10B981) as any UI accent (Emerald Embargo)",
+      "Don't use glassmorphism decoratively — one canonical use: scrolled nav",
+      "Don't use cream/sand/warm-tinted near-white as a design choice",
+      "Don't use gradient text (background-clip: text + gradient)",
+      "Don't use border-left or border-right > 1px as a colored accent stripe",
+      "Don't pair border: 1px solid + box-shadow: 0 Npx Mpx on the same element",
+      "Don't use border-radius > 16px on cards or containers",
+      "Don't use editorial-magazine aesthetics (serif, italic drop caps, broadsheet grid)",
+      "Don't add numbered section markers (01 · About) as default scaffolding",
+      "Don't add uppercase tracked eyebrows above every section heading",
+      "Don't use hand-drawn SVG or feTurbulence paper grain",
+      "Don't use repeating-linear-gradient stripe backgrounds",
+      "Don't use hero-metric SaaS templates",
+      "Don't introduce cool-tinted neutrals or blue-gray into the palette"
+    ]
+  }
+}

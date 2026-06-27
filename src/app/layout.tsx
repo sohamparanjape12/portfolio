@@ -1,6 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Barlow_Condensed, IBM_Plex_Mono, IBM_Plex_Sans_Condensed, Geist } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
+import "locomotive-scroll/dist/locomotive-scroll.css";
+import { LocomotiveProvider } from "@/components/locomotive-provider";
+import { Inter, Mona_Sans } from "next/font/google";
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: "--font-inter",
+  display: "swap",
+  fallback: ["system-ui", "sans-serif"],
+  preload: true,
+  adjustFontFallback: false,
+});
+
+const monaSans = Mona_Sans({
+  subsets: ['latin'],
+  variable: "--font-mona-sans",
+  display: "swap",
+  fallback: ["system-ui", "sans-serif"],
+  preload: true,
+  adjustFontFallback: false,
+});
 
 export const metadata: Metadata = {
   title: "Soham Paranjape | Portfolio",
@@ -21,28 +42,36 @@ export const viewport: Viewport = {
   ],
 };
 
-const barlowCondensed = Barlow_Condensed({
-  variable: "--font-barlow-condensed",
-  subsets: ["latin"],
-  weight: ["600", "900"],
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const ibmPlexSansCondensed = IBM_Plex_Sans_Condensed({
-  variable: "--font-ibm-plex-sans-condensed",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+// ─── OVERUSED GROTESK (body / labels) ─────────────────────────────────────────
+// Variable font — all weights from one file
+const overusedGrotesk = localFont({
+  src: [
+    {
+      path: "../../public/fonts/OverusedGrotesk-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/OverusedGrotesk-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/OverusedGrotesk-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/OverusedGrotesk-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-overused-grotesk",
+  display: "swap",
+  fallback: ["system-ui", "sans-serif"],
+  preload: true,
+  adjustFontFallback: false,
 });
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -53,12 +82,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`
-      ${barlowCondensed.variable} 
-      ${ibmPlexSansCondensed.variable} 
-      ${ibmPlexMono.variable} 
-      ${geistSans.variable} 
-    `} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${overusedGrotesk.variable} ${monaSans.variable}`} suppressHydrationWarning>
       <body className="antialiased bg-background text-foreground selection:bg-accent selection:text-black min-h-[100dvh]">
         <ThemeProvider
           attribute="class"
@@ -66,7 +90,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <LocomotiveProvider>
+            {children}
+          </LocomotiveProvider>
         </ThemeProvider>
       </body>
     </html>

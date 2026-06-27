@@ -23,17 +23,20 @@ function ThemeSync() {
       const activeTheme = resolvedTheme || theme;
       const color = activeTheme === "dark" ? "#050505" : "#FAF9F6";
       
-      // 1. Force a "Reflow" of meta tags for iOS Safari
-      // We clear all existing theme-color tags (including static ones from layout.tsx)
-      document.querySelectorAll('meta[name="theme-color"]').forEach(tag => tag.remove());
+      // 1. Update existing theme-color meta tags safely without removing them
+      const existingTags = document.querySelectorAll('meta[name="theme-color"]');
+      if (existingTags.length > 0) {
+        existingTags.forEach(tag => {
+          tag.setAttribute("content", color);
+        });
+      } else {
+        const meta = document.createElement("meta");
+        meta.setAttribute("name", "theme-color");
+        meta.setAttribute("content", color);
+        document.head.appendChild(meta);
+      }
 
-      // 2. Inject a fresh, clean manual override tag without any media queries
-      const meta = document.createElement("meta");
-      meta.setAttribute("name", "theme-color");
-      meta.setAttribute("content", color);
-      document.head.appendChild(meta);
-
-      // 3. Apple-specific status bar style sync (synergizes with black-translucent)
+      // 2. Apple-specific status bar style sync (synergizes with black-translucent)
       let appleMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
       if (!appleMeta) {
         appleMeta = document.createElement("meta");

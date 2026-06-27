@@ -8,19 +8,23 @@
   --color-accent: var(--accent);
   --color-border: var(--border);
 
-  --font-barlow: var(--font-barlow-condensed);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-ibm-plex-mono);
-  --font-tech: var(--font-ibm-plex-sans-condensed);
-
-  --breakpoint-xs: 480px;
+  /* Satoshi — display, headings */
+  --font-inter: var(--font-inter);
+  /* OverusedGrotesk — body, labels, metadata */
+  --font-grotesk: var(--font-overused-grotesk);
+  /* Aliases for Tailwind utilities */
+  --font-sans: var(--font-mona-sans);
+  --font-display: var(--font-inter);
+  --font-mona-sans: var(--font-mona-sans) --breakpoint-xs: 480px;
 }
 
 :root {
   --background: #FAF9F6;
   --foreground: #0D0D0D;
-  --foreground-muted: #1A1A1A; /* Perfectly matched to 95% contrast */
-  --foreground-dim: #666666;   /* Solid Stone */
+  --foreground-muted: #1A1A1A;
+  /* Ink near-black — 95% contrast on paper */
+  --foreground-dim: #666666;
+  /* Stone — readable dim text */
   --accent: #00000088;
   --border: rgba(13, 13, 13, 0.08);
   --grid-opacity: 0.03;
@@ -29,8 +33,10 @@
 .dark {
   --background: #050505;
   --foreground: #F5F0E8;
-  --foreground-muted: #D1CEC9; /* Solid Off-white */
-  --foreground-dim: #92908B;   /* Solid Warm Grey */
+  --foreground-muted: #D1CEC9;
+  /* Muted warm */
+  --foreground-dim: #92908B;
+  /* Stone warm */
   --accent: #F0F0F088;
   --border: rgba(245, 240, 232, 0.05);
   --grid-opacity: 0.01;
@@ -47,8 +53,11 @@
   .cursor-pointer,
   [role="button"] {
     @apply antialiased overflow-x-hidden transition-colors duration-500;
+    font-family: var(--font-overused-grotesk), system-ui, sans-serif;
     cursor: none !important;
+  }
 
+  body {
     /* Subtle Blueprint Grid */
     background-image: linear-gradient(to right,
         rgba(16, 185, 129, var(--grid-opacity)) 1px,
@@ -57,28 +66,55 @@
     background-size: 60px 60px;
   }
 
+  /* Display headings — Satoshi */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    @apply font-sans font-black tracking-tight leading-none;
+    font-family: var(--font-satoshi), system-ui, sans-serif;
+    @apply font-bold tracking-tight leading-none;
   }
 
   p {
+    font-family: var(--font-overused-grotesk), system-ui, sans-serif;
     @apply leading-[1.6];
+    text-wrap: pretty;
   }
 }
 
 @layer utilities {
+
+  /* Display scale — Satoshi heavy */
   .text-huge {
-    font-size: clamp(64px, 15vw, 160px);
-    line-height: 0.8;
+    font-family: var(--font-satoshi), system-ui, sans-serif;
+    font-size: clamp(64px, 15vw, 96px);
+    /* capped at 6rem per DESIGN.md */
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+    /* DESIGN.md Display Floor: ≥ -0.04em; -0.03em is our target */
+    font-weight: 700;
   }
 
+  /* Label — OverusedGrotesk, uppercase tracked */
+  .label {
+    font-family: var(--font-overused-grotesk), system-ui, sans-serif;
+    font-size: 0.625rem;
+    /* 10px */
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  /* Legacy alias — keep for any remaining mono-label references */
   .mono-label {
-    @apply font-mono text-[10px] uppercase tracking-[0.2em];
+    font-family: var(--font-overused-grotesk), system-ui, sans-serif;
+    font-size: 0.625rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
   }
 
   .glass-card {

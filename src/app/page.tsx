@@ -1,10 +1,19 @@
 "use client";
 
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import Navbar from "@/components/Navbar";
+import TextReveal from "@/components/TextReveal";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion, useScroll, useTransform, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Sun, Moon, ArrowUpRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, Fragment } from "react";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const ease = [0.23, 1, 0.32, 1] as const; // High-fidelity ease-out-expo
@@ -14,7 +23,7 @@ const PROJECTS = [
   {
     id: "01",
     name: "CDCS Platform",
-    desc: "Distributed computing system enabling students to offload ML training to idle lab machines.",
+    desc: "Distributed computing for students to offload computations to idle lab machines.",
     tech: ["C", "Sockets", "Python", "PostgreSQL", "Next.js", "Node.js", "TailwindCSS"],
     year: "2026",
     img: "/cdcs.png"
@@ -25,6 +34,7 @@ const PROJECTS = [
     desc: "Static event website for Google Developer Groups MITWPU's Devolution event.",
     tech: ["Next.js", "TailwindCSS", "Framer Motion"],
     year: "2026",
+    link: "https://www.devolution.in/",
     img: "/devolution.png"
   },
   {
@@ -95,13 +105,13 @@ const Cursor = () => {
     <>
       {/* Sharp Center Dot */}
       <motion.div
-        className="fixed top-0 left-0 w-1 h-1 bg-foreground rounded-full pointer-events-none z-[101] hidden md:block"
+        className="fixed top-0 left-0 w-1 h-1 bg-foreground rounded-full pointer-events-none z-[101] hidden md:block custom-cursor"
         animate={{
           x: position.x - 2,
           y: position.y - 2,
           scale: clicked ? 0.8 : 1,
         }}
-        transition={{ type: "spring", damping: 35, stiffness: 450, mass: 0.1 }}
+        transition={{ type: "spring", damping: 25, stiffness: 800, mass: 0.05 }}
       />
       {/* Trailing Outer Ring */}
       <motion.div
@@ -113,13 +123,13 @@ const Cursor = () => {
           opacity: hovered ? 1 : 0.5,
           borderColor: hovered ? "var(--color-accent)" : "rgba(var(--foreground), 0.2)",
         }}
-        transition={{ type: "spring", damping: 20, stiffness: 150, mass: 0.5 }}
+        transition={{ type: "spring", damping: 28, stiffness: 350, mass: 0.2 }}
       />
     </>
   );
 };
 
-const ThemeToggle = () => {
+export const ThemeToggle = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -132,7 +142,7 @@ const ThemeToggle = () => {
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="p-2 rounded-full bg-foreground/5 hover:bg-foreground/10 border border-border transition-colors duration-300"
+      className="p-2 rounded-full w-fit dark:bg-foreground/5 bg-background/10 hover:bg-foreground/10 border border-border transition-colors duration-300"
       aria-label="Toggle theme"
     >
       <AnimatePresence mode="wait">
@@ -142,7 +152,7 @@ const ThemeToggle = () => {
           animate={{ opacity: 1, rotate: 0, scale: 1 }}
           exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="flex items-center justify-center text-foreground"
+          className="flex items-center justify-center dark:text-foreground"
         >
           {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
         </motion.div>
@@ -152,21 +162,63 @@ const ThemeToggle = () => {
 };
 
 // ─── TINY COMPONENTS ─────────────────────────────────────────────────────────
-const Reveal = ({ children, delay = 0, y = 16, scale = 0.95, className = "" }: { children: React.ReactNode; delay?: number; y?: number; scale?: number; className?: string }) => {
-  const [isFinished, setIsFinished] = useState(false);
+const Reveal = ({
+  children,
+  delay = 0,
+  y = 8,
+  scale = 0.99,
+  ease = "power3.out",
+  duration = 0.6,
+  triggerStart = "top 85%",
+  triggerRef,
+  className = ""
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  y?: number;
+  scale?: number;
+  ease?: string;
+  duration?: number;
+  triggerStart?: string;
+  triggerRef?: React.RefObject<HTMLElement | null> | string;
+  className?: string;
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (!containerRef.current) return;
+    const trigger = triggerRef
+      ? (typeof triggerRef === "string"
+        ? (containerRef.current.closest(triggerRef) || triggerRef)
+        : triggerRef.current)
+      : containerRef.current;
+
+    gsap.fromTo(
+      containerRef.current,
+      { opacity: 0, y, scale },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: duration,
+        ease,
+        delay,
+        scrollTrigger: {
+          trigger: trigger,
+          start: triggerStart,
+          once: true
+        }
+      }
+    );
+  }, { scope: containerRef, dependencies: [delay, y, scale, ease, duration, triggerStart, triggerRef] });
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y, scale }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: "-10%" }}
-      onAnimationComplete={() => setIsFinished(true)}
-      transition={{ duration: 0.6, ease, delay }}
+    <div
+      ref={containerRef}
       className={`${className} will-change-transform [backface-visibility:hidden]`}
-      style={isFinished ? { opacity: 1, transform: "none", willChange: "auto" } : {}}
     >
       {children}
-    </motion.div>
+    </div>
   );
 };
 
@@ -174,7 +226,8 @@ const Tag = ({ children }: { children: React.ReactNode }) => (
   <motion.span
     whileHover={{ scale: 1.05, borderColor: "var(--color-accent)", color: "var(--foreground)" }}
     whileTap={{ scale: 0.96 }}
-    className="inline-block px-3 py-1 text-[10px] tracking-[0.15em] uppercase font-mono border border-border text-dim rounded-full select-none"
+    className="inline-block px-3 py-1 text-[10px] tracking-[0.15em] uppercase font-grotesk border border-border text-dim rounded-full select-none"
+    style={{ fontFamily: "var(--font-overused-grotesk), system-ui, sans-serif" }}
   >
     {children}
   </motion.span>
@@ -183,121 +236,148 @@ const Tag = ({ children }: { children: React.ReactNode }) => (
 const Divider = () => <div className="w-full h-px bg-border" />;
 
 // ─── PROJECT ROW ─────────────────────────────────────────────────────────────
-const ProjectRow = ({ project, index, isOpen, onToggle }: {
+const ProjectCard = ({ project, index }: {
   project: typeof PROJECTS[0];
   index: number;
-  isOpen: boolean;
-  onToggle: () => void;
 }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const detailsRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+
+  const { theme } = useTheme();
+
+  useGSAP(() => {
+    if (!cardRef.current || !detailsRef.current || !innerRef.current) return;
+
+    const card = cardRef.current;
+    const details = detailsRef.current;
+    const inner = innerRef.current;
+
+    // On touch/mobile devices (no hover support), keep details always visible
+    const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    if (!canHover) return;
+
+    // Set initial state: details collapsed
+    gsap.set(details, { height: 0, overflow: "hidden" });
+    gsap.set(inner, { opacity: 0, y: 8 });
+
+    let tl: gsap.core.Timeline | null = null;
+
+    const onEnter = () => {
+      if (tl) tl.kill();
+
+      const currentHeight = details.offsetHeight;
+      gsap.set(details, { height: "auto" });
+      const targetHeight = details.offsetHeight;
+      gsap.set(details, { height: currentHeight });
+
+      tl = gsap.timeline()
+        .to(card, {
+          backgroundColor: theme === "dark" ? "rgba(18,18,20,0.8)" : "rgba(244,244,245,1)",
+          duration: 0.48,
+          ease: "power4.out",
+        })
+        .to(details, {
+          height: targetHeight,
+          duration: 0.8,
+          ease: "power4.out",
+        }, "+0.4")
+        .to(inner, {
+          opacity: 1,
+          y: 0,
+          duration: 0.3,
+          ease: "power2.out",
+        }, "-=0.65");
+    };
+
+    const onLeave = () => {
+      if (tl) tl.kill();
+
+      tl = gsap.timeline()
+        .to(inner, {
+          opacity: 0,
+          y: 6,
+          duration: 0.18,
+          ease: "power2.in",
+        })
+        .to(details, {
+          height: 0,
+          duration: 0.45,
+          ease: "power3.out",
+        }, "-=0.15")
+        .to(card, {
+          y: 0,
+          backgroundColor: theme === "dark" ? "rgba(18,18,20,0)" : "rgba(255,255,255,0)",
+          duration: 0.35,
+          ease: "power3.out",
+        }, "<");
+    };
+
+    card.addEventListener("mouseenter", onEnter);
+    card.addEventListener("mouseleave", onLeave);
+
+    return () => {
+      card.removeEventListener("mouseenter", onEnter);
+      card.removeEventListener("mouseleave", onLeave);
+    };
+  }, { scope: cardRef, dependencies: [theme] });
+
   return (
-    <Reveal delay={index * 0.04}>
-      <motion.div
-        className="group cursor-pointer relative"
-        onClick={onToggle}
-        whileHover={{ x: 10, scale: 1.002 }}
-        whileTap={{ scale: 0.995 }}
-        transition={{ duration: 0.4, ease }}
+    <Reveal key={index} duration={0.8} ease="power3.out" delay={0.4 + index * 0.25} triggerStart="top 80%">
+      <div
+        ref={cardRef}
+        onClick={() => {
+          if (project.link) {
+            window.open(project.link, "_blank")
+          }
+        }}
+        className="group cursor-pointer relative rounded-2xl p-4 -mx-4 will-change-transform dark:bg-[rgba(18,18,20,0)] bg-[rgba(255,255,255,0)]"
       >
-        <div className="flex items-center justify-between py-7 md:py-9 gap-6 relative z-10">
-          {/* Left */}
-          <div className="flex items-baseline gap-5 md:gap-8 min-w-0">
-            <span className="font-mono text-[10px] text-foreground/30 shrink-0 tabular-nums">{project.id}</span>
-            <h3 className="text-2xl md:text-4xl font-semibold tracking-tight text-foreground/90 truncate group-hover:text-foreground transition-colors duration-300">
-              {project.name}
-            </h3>
-          </div>
-          {/* Right */}
-          <div className="flex items-center gap-4 md:gap-8 shrink-0">
-            <span className="hidden md:block font-mono text-[10px] text-foreground/30">{project.year}</span>
-            <motion.span
-              animate={{ rotate: isOpen ? 45 : 0 }}
-              transition={{ duration: 0.3, ease }}
-              className="text-foreground/40 group-hover:text-foreground/70 transition-colors text-lg leading-none select-none"
-            >
-              +
-            </motion.span>
+        {/* Always-visible: image */}
+        <div className="w-full mb-4">
+          <div className="aspect-[17/9] w-full bg-[#111111] rounded-xl flex items-center justify-center relative overflow-hidden">
+            <Image
+              src={project.img}
+              alt={project.name}
+              fill
+              className="object-cover object-top hue-rotate-[-5deg] brightness-[77%] saturate-[80%] sepia-[20%] group-hover:filter-none transition-all duration-400 delay-450"
+            />
           </div>
         </div>
 
-        <AnimatePresence initial={false}>
-          {isOpen && (
-            <motion.div
-              key="body"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.5, ease: slowEase }}
-              className="overflow-hidden"
-            >
-              <div className="pb-12 pt-4 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 pl-8 md:pl-16 pr-4">
-                {/* Text Content */}
-                <div className="md:col-span-5 flex flex-col justify-center">
-                  <p className="text-dim text-sm md:text-base leading-relaxed mb-8 max-w-sm">
-                    {project.desc}
-                  </p>
-                  <div className="flex flex-wrap gap-2 items-center">
-                    {project.tech.map((t, ti) => (
-                      <motion.div
-                        key={t}
-                        initial={{ opacity: 0, scale: 0.9, y: 5 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        transition={{ duration: 0.3, ease, delay: ti * 0.04 + 0.1 }}
-                      >
-                        <Tag>{t}</Tag>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
+        {/* Always-visible: name + desc */}
+        <div className="flex items-start justify-between gap-4 pb-1">
+          <h2 className="text-xl font-medium font-inter tracking-tight">{project.name}</h2>
+          {
+            project.link && (
+              <a href={project.link} target="_blank">
+                <ArrowUpRight className="w-4 h-4 text-foreground/50 shrink-0 mt-1 mr-2" />
+              </a>
+            )
+          }
+        </div>
 
-                {/* Placeholder Image Container */}
-                <div className="md:col-span-7">
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease, delay: 0.2 }}
-                    className="aspect-[17/9] w-full bg-[#111] border border-1 dark:border-neutral-900 border-neutral-100 rounded-lg flex items-center justify-center relative overflow-hidden group/img"
-                  >
-                    <Image
-                      src={project.img}
-                      alt={project.name}
-                      fill
-                      className="object-cover object-top"
-                    />
-                    {/* Subtle grid pattern for placeholder feel */}
-                    {
-                      !project.img && (<>
-                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                          style={{ backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-
-                        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-dim group-hover/img:text-dim transition-colors duration-500 opacity-20 group-hover/img:opacity-40">
-                          [ Project Preview ]
-                        </span></>
-                      )
-                    }
-
-                    {/* Softened gloss sweep */}
-                    <motion.div
-                      className="absolute inset-0 bg-[linear-gradient(110deg,transparent_30%,rgba(255,255,255,0.08)_50%,transparent_70%)] pointer-events-none"
-                      initial={{ x: "-100%" }}
-                      animate={{ x: "100%" }}
-                      transition={{
-                        duration: 1.8,
-                        repeat: Infinity,
-                        repeatDelay: 3,
-                        ease: [0.16, 1, 0.3, 1]
-                      }}
-                    />
-                  </motion.div>
-                </div>
+        {/* Hidden details: year + tech pills */}
+        <div ref={detailsRef}>
+          <div ref={innerRef}>
+            <p className="text-sm text-foreground/70 font-mona-sans leading-tight mt-0.5">{project.desc}</p>
+            <div className="flex items-center justify-between pt-3 pb-1 flex-wrap gap-2">
+              <span className="text-xs font-mona-sans text-foreground/60">{project.year}</span>
+              <div className="flex flex-wrap gap-1.5">
+                {project.tech.map((t, i) => (
+                  <Fragment key={i}>
+                    <span className="inline-flex dark:bg-zinc-800 bg-zinc-200 text-zinc-600 dark:text-dim px-2.5 py-1 rounded-full text-sm font-medium my-0.5">{t}</span>
+                  </Fragment>
+                ))}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <Divider />
-      </motion.div>
+            </div>
+          </div>
+        </div>
+      </div>
     </Reveal>
   );
 };
+
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default function Home() {
@@ -305,9 +385,14 @@ export default function Home() {
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const heroY = useTransform(scrollY, [0, 400], [0, -60]);
+  const aboutRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   // Accordion state
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  // Reduced motion
+  const prefersReducedMotion = useReducedMotion();
 
   // Nav scroll state
   const [scrolled, setScrolled] = useState(false);
@@ -317,216 +402,281 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useGSAP(() => {
+    if (!imgRef.current) return;
+    gsap.fromTo(imgRef.current,
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        delay: 0.35,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: "#about",
+          start: "top 50%",
+          once: true
+        }
+      }
+    );
+
+    // Scrubbed timeline: one ScrollTrigger drives the whole sequence.
+    // • fromVars = starting property values only (no duration/delay/ease here)
+    // • scrub = no "once", no nested scrollTriggers, no ease (scroll IS the playhead)
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: "#about",
+        start: "top 60%",
+        end: "bottom 20%",
+        scrub: 1.2,
+      }
+    });
+    // Phase 1: scale up as section enters
+    tl.fromTo(".about-image",
+      { scale: 1.2 },
+      { scale: 1.4, ease: "power4.out" }
+    );
+    // Phase 2: gentle parallax upward as section scrolls through
+    tl.to(".about-image",
+      { y: -20, ease: "none" }
+    );
+  }, { dependencies: [] });
+
   return (
-    <main className="min-h-[100dvh] bg-background text-foreground selection:bg-accent selection:text-black antialiased cursor-none overflow-hidden">
+    // CHANGE THIS LINE: Swap 'overflow-hidden' for 'overflow-x-hidden'
+    <main className="min-h-[100dvh] bg-background text-foreground selection:bg-accent selection:text-black antialiased cursor-none overflow-x-hidden">
       <Cursor />
 
-      {/* ── NAV ───────────────────────────────────────────────────────────── */}
-      <motion.nav
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease, delay: 0.3 }}
-        className={`fixed top-0 left-0 right-0 z-50 ${scrolled ? "border-b border-border bg-background/80 backdrop-blur-md transition-all duration-500" : ""}`}
-      >
-        <div className="max-w-5xl mx-auto px-6 md:px-10 h-14 flex items-center justify-between">
-          <div className="w-8 md:block hidden" /> {/* Spacer */}
-          <div className="flex items-center gap-6 md:gap-10">
-            {["Work", "About", "Contact"].map(item => (
-              <motion.a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                whileHover={{ y: -2, color: "var(--color-accent)" }}
-                whileTap={{ scale: 0.96 }}
-                className="font-mono text-[10px] uppercase tracking-[0.15em] text-dim transition-colors duration-200"
-              >
-                {item}
-              </motion.a>
-            ))}
-          </div>
-          <ThemeToggle />
-        </div>
-      </motion.nav>
+
+      <Navbar heroRef={heroRef} />
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <motion.section
+      <section
         id="hero"
         ref={heroRef}
-        style={{ opacity: heroOpacity, y: heroY }}
-        className="min-h-[100dvh] max-w-5xl mx-auto px-6 md:px-10 flex flex-col justify-center pt-14 relative"
+        className="relative min-h-[100dvh] max-w-7xl mx-auto px-6 md:px-10 flex flex-col justify-end pt-14"
       >
-        {/* Architectural Background Type (Geometric Outlines)
+        {/* ── NAV ───────────────────────────────────────────────────────────── */}
+        <motion.nav
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease, delay: 0.3 }}
+          className={`absolute top-0 left-0 right-0 z-50`}
+        >
+          <div className="max-w-7xl mx-auto px-6 md:px-10 h-14 flex items-center justify-between">
+            <div className="w-8 md:block hidden" /> {/* Spacer */}
+            <div className="flex items-center gap-6 md:gap-10 justify-between w-full">
+              {["Work", "About", "Contact"].map(item => (
+                <motion.a
+                  key={item}
+                  href={`#${item.toLowerCase()}`}
+                  whileHover={{ color: "var(--color-foreground)", transition: { duration: 0.3, ease: "easeInOut" } }}
+                  whileTap={{ scale: 0.96 }}
+                  className="text-xs lowercase tracking-[0.1em] text-dim transition-colors duration-200"
+                  style={{ fontFamily: "var(--font-mona-sans), system-ui, sans-serif" }}
+                >
+                  {item}
+                </motion.a>
+              ))}
+            </div>
+          </div>
+        </motion.nav>
+        {/* Top-right metadata — desktop only.
+            Diagonal composition: name anchors bottom-left, metadata sits top-right.
+            Creates visual tension and fills the right void without adding prose. */}
         <motion.div
-          style={{ y: useTransform(scrollY, [0, 800], [0, 200]) }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, ease, delay: 0.8 }}
-          className="absolute -top-[15%] -right-[75%] pointer-events-none select-none z-0"
+          initial={prefersReducedMotion ? false : { opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: prefersReducedMotion ? 0 : 0.55,
+            ease: [0.16, 1, 0.3, 1],
+            delay: prefersReducedMotion ? 0 : 1.0,
+          }}
+          className="absolute top-20 right-6 md:right-10 hidden md:flex flex-col items-end gap-1"
         >
           <span
-            className="text-[110vw] font-bold leading-none tracking-tighter text-transparent"
-            style={{ WebkitTextStroke: "1px var(--border)" }}
+            className="text-sm text-dim tracking-[0.1em] lowercase"
+            style={{ fontFamily: "var(--font-mona-sans), system-ui, sans-serif" }}
           >
-            G
+            Full-stack Developer
+          </span>
+          <span
+            className="text-xs text-dim tracking-[0.1em] lowercase"
+            style={{ fontFamily: "var(--font-mona-sans), system-ui, sans-serif" }}
+          >
+            MIT&#8209;WPU | Pune
           </span>
         </motion.div>
-        */}
-        <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease, delay: 0.1 }}
-        >
-          <p className="font-mono text-[10px] text-dim tracking-[0.2em] uppercase mb-8">
-            Full-Stack Developer · Pune, IN
-          </p>
 
-          <div className="overflow-hidden pb-4 mb-6">
-            <motion.h1
-              initial={{ y: "110%" }}
-              animate={{ y: 0 }}
-              transition={{ duration: 1.2, ease, delay: 0.2 }}
-              className="text-[clamp(3rem,10vw,8rem)] font-[var(--font-geist-sans)] font-semibold tracking-[-0.04em] text-foreground"
-              style={{ lineHeight: 0.84 }}
+        {/* Main content — lower-left anchor */}
+        <motion.div
+          className="pb-16 flex w-full md:flex-row flex-col gap-10"
+          style={{ opacity: heroOpacity, y: heroY }}
+        >
+          {/* ── Name block ── clipPath reveal on the element itself.
+              No overflow:hidden container, so descenders (j, p, y, g) are
+              never clipped regardless of lineHeight. The clip-path wipe +
+              slight y drift replicates the GSAP line-reveal feel. */}
+          <div className="">
+            {/* Soham */}
+            <TextReveal
+              delay={0.1}
+              stagger={0.05}
+              duration={1.2}
+              ease="power3.out"
+              className="block text-[clamp(4rem,10vw,6.5rem)] font-semibold text-foreground tracking-tighter leading-[0.77] font-inter"
+              byLetter
             >
-              Soham<br />
-              <span className="text-muted">Paranjape</span>
-            </motion.h1>
+              Soham
+            </TextReveal>
+
+            {/* Paranjape — byLetter reveal, starts after Soham */}
+            <TextReveal
+              delay={0.38}
+              stagger={0.04}
+              duration={1.2}
+              ease="power3.out"
+              className="block text-[clamp(4rem,10vw,6.5rem)] font-normal text-foreground tracking-tighter leading-[0.95] font-inter"
+              byLetter
+            >
+              Paranjape
+            </TextReveal>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease, delay: 0.8 }}
-            className="flex flex-col gap-2 ml-0 md:ml-4"
-          >
-            <p className="text-dim text-base md:text-lg max-w-md leading-relaxed mb-12">
-              Building real products, not just projects.<br /> CSE undergrad at MIT-WPU. I write code that looks as good as it runs.
-            </p>
 
-            <div className="flex items-center gap-6">
-              <motion.a
-                href="#work"
-                whileHover={{ y: -2, color: "var(--color-accent)", borderColor: "var(--color-accent)" }}
-                whileTap={{ scale: 0.97 }}
-                className="font-mono text-[11px] uppercase tracking-[0.15em] text-foreground border-b border-border pb-0.5 transition-all duration-200"
-              >
-                View Work
-              </motion.a>
-              <motion.a
-                href="mailto:sohamparanjape1204@gmail.com"
-                whileHover={{ x: 3, color: "var(--color-accent)" }}
-                whileTap={{ scale: 0.97 }}
-                className="font-mono text-[11px] uppercase tracking-[0.15em] text-dim transition-colors duration-200"
-              >
-                Get in touch ↗
-              </motion.a>
-            </div>
+          {/* ── CTAs ── */}
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: prefersReducedMotion ? 0 : 0.65,
+              ease: [0.16, 1, 0.3, 1],
+              delay: prefersReducedMotion ? 0 : 0.75,
+            }}
+            className="flex gap-6 justify-end pb-4 w-full items-end"
+          >
+            <motion.a
+              href="#work"
+              whileHover={{ y: -2, color: "var(--foreground)" }}
+              whileTap={{ scale: 0.97 }}
+              className="text-sm lowercase tracking-[0.1em] text-dim border-b border-border pb-0.5 transition-all duration-200"
+              style={{ fontFamily: "var(--font-mona-sans), system-ui, sans-serif" }}
+            >
+              View Work
+            </motion.a>
+            <motion.a
+              href="mailto:sohamparanjape1204@gmail.com"
+              whileHover={{ x: 3, color: "var(--foreground)" }}
+              whileTap={{ scale: 0.97 }}
+              className="text-sm lowercase tracking-[0.1em] text-dim border-b border-transparent pb-0.5 transition-all duration-200"
+              style={{ fontFamily: "var(--font-mona-sans), system-ui, sans-serif" }}
+            >
+              Get in touch ↗
+            </motion.a>
           </motion.div>
         </motion.div>
+      </section>
 
-        {/* Scroll cue */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-          className="absolute bottom-10 left-1/2"
-        >
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-            className="w-px h-10 bg-gradient-to-b dark:from-neutral-700 from-neutral-400/85 to-transparent mx-auto"
-          />
-        </motion.div>
-      </motion.section>
+      {/* ── ABOUT ─────────────────────────────────────────────────────────── */}
+      <section id="about" ref={aboutRef} className="min-h-[90vh] max-w-7xl mx-auto px-6 py-32">
+        <div className="grid grid-cols-1 md:grid-cols-7 gap-12 md:h-[65vh] h-auto">
+
+          {/* Left col */}
+          <div className="flex flex-col justify-between md:h-full h-auto md:col-span-2 pt-8">
+            <Reveal triggerRef="#about" triggerStart="top 50%" delay={0}>
+              <h2 className="text-[clamp(2rem,4vw,2.8rem)] tracking-tighter mb-12" style={{ fontFamily: "var(--font-inter), system-ui, sans-serif", fontWeight: 600 }}>Hey!</h2>
+            </Reveal>
+            <TextReveal
+              className="text-lg md:text-xl font-medium tracking-normal leading-normal font-inter "
+              duration={0.8}
+              stagger={0.06}
+              ease="power4.out"
+              triggerRef="#about"
+              triggerStart="top 50%"
+              delay={0.15}
+            >
+              I'm Soham, a second year CS student who loves building things, riding motorcycles and solving problems.
+            </TextReveal>
+          </div>
+
+          <div ref={imgRef} className="md:col-span-3 flex items-end justify-center">
+            <div className="rounded-md aspect-[4/5] md:h-[480px] h-[320px] relative overflow-hidden">
+              <img src={"/sunrise.jpeg"} alt="About Image"
+                className="about-image rounded-md object-contain absolute"
+                style={{ filter: "sepia(45%) saturate(65%) hue-rotate(5deg) brightness(77%)" }}
+              />
+            </div>
+          </div>
+
+          {/* Right col */}
+          <div className="flex flex-col justify-end md:h-full h-auto md:col-span-2">
+            <TextReveal
+              className="text-md md:text-md font-light tracking-normal leading-tight font-mona-sans"
+              duration={0.9}
+              stagger={0.06}
+              delay={0.65}
+              ease="power3.out"
+              triggerRef="#about"
+              triggerStart="top 50%"
+            >
+              {`I'm a Tech Member at\n`}
+              <span className="inline-flex items-center justify-center">
+                <Image
+                  src="/gdg-logo.png"
+                  alt="GDG Logo"
+                  width={28}
+                  height={28}
+                  className="w-6 h-6 object-contain"
+                />
+              </span>
+              Google Developer Groups MIT-WPU Pune. I work on full stack web applications using
+              {
+                ["Next.js", "Typescript", "TailwindCSS", "PostgreSQL", "Framer Motion", "Node.js", "GSAP"].map((tech, i) => (
+                  <Fragment key={tech}>
+                    <span className="inline-flex dark:bg-zinc-800 bg-zinc-200 dark:text-zinc-100 text-zinc-800 px-2.5 py-1 rounded-full text-sm font-medium my-0.5">
+                      {tech}
+                    </span>
+                    <span>
+                      {i < 6 && ", "}
+                    </span>
+                  </Fragment>
+                ))
+              }. Interested in learning new technologies and expanding my skillset.
+
+            </TextReveal>
+
+
+          </div>
+        </div>
+      </section>
 
       {/* ── WORK ──────────────────────────────────────────────────────────── */}
-      <section id="work" className="max-w-5xl mx-auto px-6 md:px-10 py-32 md:py-48">
-        <Reveal>
-          <div className="flex items-end justify-between mb-16">
-            <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-dim">Selected Work</h2>
-            <span className="font-mono text-[10px] text-dim opacity-50">2025 – 2026</span>
-          </div>
-        </Reveal>
+      <section id="work" className="max-w-7xl mx-auto px-6 md:px-10 py-32 md:py-48">
+        <TextReveal delay={0.4} stagger={0.04} duration={1.2} ease="power3.out" className="text-[clamp(2rem,5vw,4rem)] tracking-tighter font-inter font-medium">
+          Featured Projects
+        </TextReveal>
 
-        <Divider />
-        <div>
+        <div className="grid md:grid-cols-2 gap-12 gap-y-4 mt-16">
           {PROJECTS.map((p, i) => (
-            <ProjectRow
+            <ProjectCard
               key={p.id}
               project={p}
               index={i}
-              isOpen={activeIndex === i}
-              onToggle={() => setActiveIndex(activeIndex === i ? null : i)}
             />
           ))}
         </div>
       </section>
 
-      {/* ── ABOUT ─────────────────────────────────────────────────────────── */}
-      <section id="about" className="max-w-5xl mx-auto px-6 md:px-10 py-32 md:py-48 border-t border-border">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
 
-          {/* Left col */}
-          <div>
-            <Reveal>
-              <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-foreground/40 mb-12">About</h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="text-muted text-base leading-relaxed mb-6">
-                First-year CS student at MIT World Peace University, Pune. I work across the full stack - Next.js, React, Node.js, and PostgreSQL, with a focus on shipping things that are both fast and considered.
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <p className="text-dim text-sm leading-relaxed">
-                I'm a Tech Team Member at Google Developer Groups MITWPU.<br />
-                I love riding my bike and exploring new places.
-              </p>
-            </Reveal>
-          </div>
-
-          {/* Right col — skills */}
-          <div className="space-y-10">
-            <Reveal>
-              <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-dim mb-12">Stack</h2>
-            </Reveal>
-            {SKILLS.map((group, gi) => (
-              <Reveal key={group.label} delay={gi * 0.04}>
-                <div className="flex gap-6">
-                  <span className="font-mono text-[10px] text-dim uppercase tracking-[0.1em] w-20 shrink-0 pt-0.5">
-                    {group.label}
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {group.items.map((item, ii) => (
-                      <motion.div
-                        key={item}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.3, ease, delay: ii * 0.03 + 0.1 }}
-                      >
-                        <Tag>{item}</Tag>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ── CONTACT ───────────────────────────────────────────────────────── */}
-      <section id="contact" className="max-w-5xl mx-auto px-6 md:px-10 py-32 md:py-48 border-t border-border">
-        <Reveal>
-          <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-dim mb-16">Contact</h2>
-        </Reveal>
+      <section id="contact" className="max-w-7xl mx-auto px-6 md:px-10 py-32 md:py-48 border-t border-border">
 
-        <Reveal delay={0.1}>
-          <p className="text-[clamp(2rem,5vw,4rem)] font-semibold tracking-[-0.03em] text-foreground leading-[1.05] max-w-xl mb-16">
-            Open to collaborations and interesting problems.
-          </p>
-        </Reveal>
+        <TextReveal delay={0.1} triggerStart="top 75%" stagger={0.08} className="text-[clamp(2rem,5vw,4rem)] font-medium text-foreground max-w-2xl mb-16 font-inter leading-[0.92] tracking-tighter">
+          Open to collaborations and interesting problems.
+        </TextReveal>
 
-        <div className="flex flex-col gap-0">
+        <div className="flex flex-col gap-0 max-w-5xl">
           {[
             { label: "Email", href: "mailto:sohamparanjape1204@gmail.com", display: "sohamparanjape1204@gmail.com" },
             { label: "LinkedIn", href: "https://linkedin.com/in/soham-paranjape-8b2473374", display: "linkedin.com/in/soham-paranjape" },
@@ -544,8 +694,8 @@ export default function Home() {
                 transition={{ duration: 0.3, ease }}
               >
                 <div className="flex items-center gap-8 relative z-10">
-                  <span className="font-mono text-[10px] text-dim uppercase tracking-[0.15em] w-16 shrink-0">{link.label}</span>
-                  <span className="text-sm text-dim group-hover:text-foreground transition-colors duration-300">{link.display}</span>
+                  <span className="text-sm md:text-md text-dim lowercase font-mona-sans font-normal tracking-[0.1em] w-16 shrink-0">{link.label}</span>
+                  <span className="text-sm md:text-md text-dim group-hover:text-foreground font-mona-sans transition-colors duration-300">{link.display}</span>
                 </div>
                 <span className="text-dim group-hover:text-foreground transition-colors duration-300 relative z-10"><ArrowUpRight size={14} /></span>
               </motion.a>
@@ -556,9 +706,9 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
-      <footer className="max-w-5xl mx-auto px-6 md:px-10 py-10 flex items-center justify-between border-t border-border">
-        <span className="font-mono text-[10px] text-dim tracking-[0.2em] uppercase">© 2026 Soham Paranjape</span>
-        <span className="font-mono text-[10px] text-dim tracking-[0.2em] uppercase">Pune / IN</span>
+      <footer className="max-w-full mx-auto px-6 md:px-10 py-10 flex items-center justify-between border-t border-border">
+        <span className="text-sm text-dim tracking-[0.08em] lowercase font-mona-sans">© 2026 Soham Paranjape</span>
+        <span className="text-xs text-dim tracking-[0.08em] lowercase font-mona-sans" style={{ fontFamily: "var(--font-overused-grotesk), system-ui, sans-serif" }}>Pune / IN</span>
       </footer>
 
     </main>

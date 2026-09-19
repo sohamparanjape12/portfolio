@@ -861,8 +861,8 @@ export default function Home() {
                 grid="hex"
                 inverted={false}
                 size={0.35}
-                radius={1.12}
-                contrast={0.32}
+                radius={1.22}
+                contrast={0.30}
                 grainMixer={0.18}
                 grainOverlay={0.2}
                 grainSize={0.25}

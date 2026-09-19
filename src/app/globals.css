@@ -16,6 +16,7 @@
   --font-sans: var(--font-mona-sans);
   --font-display: var(--font-inter);
   --font-mona-sans: var(--font-mona-sans) --breakpoint-xs: 480px;
+  --font-literata: var(--font-literata);
 }
 
 :root {

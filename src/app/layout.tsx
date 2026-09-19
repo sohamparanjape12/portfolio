@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import "locomotive-scroll/dist/locomotive-scroll.css";
 import { LocomotiveProvider } from "@/components/locomotive-provider";
-import { Inter, Mona_Sans } from "next/font/google";
+import { Inter, Mona_Sans, Literata } from "next/font/google";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -19,6 +19,15 @@ const monaSans = Mona_Sans({
   variable: "--font-mona-sans",
   display: "swap",
   fallback: ["system-ui", "sans-serif"],
+  preload: true,
+  adjustFontFallback: false,
+});
+
+const literata = Literata({
+  subsets: ['latin'],
+  variable: "--font-literata",
+  display: "swap",
+  fallback: ["system-ui", "serif"],
   preload: true,
   adjustFontFallback: false,
 });
@@ -47,25 +56,9 @@ export const viewport: Viewport = {
 const overusedGrotesk = localFont({
   src: [
     {
-      path: "../../public/fonts/OverusedGrotesk-Regular.woff2",
-      weight: "400",
+      path: "../../public/fonts/OverusedGrotesk-VF.woff2",
       style: "normal",
-    },
-    {
-      path: "../../public/fonts/OverusedGrotesk-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/OverusedGrotesk-SemiBold.woff2",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/OverusedGrotesk-Bold.woff2",
-      weight: "700",
-      style: "normal",
-    },
+    }
   ],
   variable: "--font-overused-grotesk",
   display: "swap",
@@ -82,7 +75,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${overusedGrotesk.variable} ${monaSans.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${overusedGrotesk.variable} ${monaSans.variable} ${literata.variable}`} suppressHydrationWarning>
       <body className="antialiased bg-background text-foreground selection:bg-accent selection:text-black min-h-[100dvh]">
         <ThemeProvider
           attribute="class"

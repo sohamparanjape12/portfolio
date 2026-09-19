@@ -2,16 +2,30 @@
 
 import { useGSAP } from "@gsap/react";
 import { MenuIcon, X } from "lucide-react"; // Swapped to X for open state visual indicator
-import { useRef, useState, RefObject } from "react";
+import { useEffect, useRef, useState, RefObject } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ThemeToggle } from "@/app/page";
+import CornerKit, { type SquircleConfig } from "@cornerkit/core";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Navbar({ heroRef }: { heroRef: RefObject<HTMLElement | null> }) {
     const navbarRef = useRef<HTMLDivElement>(null);
     const [menuOpen, setMenuOpen] = useState(false);
+
+    // CornerKit squircle on the nav background layer (NOT on .nav itself:
+    // CornerKit renders via clip-path, which would fight the GSAP
+    // circle-reveal menu animation that also owns .nav's clip-path).
+    // Client-only + post-mount so no <script> is injected during render.
+    useEffect(() => {
+        const ck = new CornerKit();
+        const config: SquircleConfig = { radius: 24, smoothing: 0.8 };
+        ck.applyAll(".nav-squircle", config);
+        return () => {
+            ck.destroy();
+        };
+    }, []);
 
     // Single useGSAP hook manages all initial settings and interaction setups securely
     useGSAP(() => {
@@ -118,9 +132,12 @@ export default function Navbar({ heroRef }: { heroRef: RefObject<HTMLElement | n
               and visibility hidden. Starts collapsed as a button at top-right.
             */}
             <div
-                className="nav pointer-events-none fixed md:top-6 top-1 md:right-6 md:left-auto left-4 right-4 bg-[#121214]/90 border border-zinc-800/10 backdrop-blur-lg rounded-2xl p-6 flex flex-col text-xl font-medium text-zinc-200 md:min-w-[240px]"
+                className="nav pointer-events-none fixed md:top-6 top-1 md:right-6 md:left-auto left-4 right-4 p-6 flex flex-col text-xl font-medium text-zinc-200 md:min-w-[240px]"
                 style={{ clipPath: "circle(20px at calc(100% - 36px) 36px)" }}
             >
+                {/* Squirceled background layer — owns the panel shape so GSAP
+                    can own .nav's clip-path for the circle-reveal animation */}
+                <div className="nav-squircle absolute inset-0 bg-[#121214] border border-zinc-800/10 backdrop-blur-lg overflow-hidden" style={{ backdropFilter: "blur(10px)" }} aria-hidden="true" />
                 {/* Toggle Button inside the container */}
                 <div
                     onClick={toggleMenu}
@@ -130,10 +147,12 @@ export default function Navbar({ heroRef }: { heroRef: RefObject<HTMLElement | n
                 </div>
 
 
-                <ThemeToggle />
+                <div className="relative z-10 w-fit">
+                    <ThemeToggle />
+                </div>
 
                 {/* Content links container */}
-                <div className="flex flex-col gap-10 mt-8">
+                <div className="relative z-10 flex flex-col gap-10 mt-8">
                     <div className="flex flex-col gap-2">
                         {["Work", "About", "Contact"].map((item) => (
                             <a

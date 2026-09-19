@@ -12,6 +12,8 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useRef, useState, useEffect, Fragment } from "react";
 import CornerKit, { type SquircleConfig } from '@cornerkit/core';
+import { ShaderMount } from "@paper-design/shaders";
+import { halftoneDotsFragmentShader, getShaderColorFromString } from "@paper-design/shaders";
 import { HalftoneDots } from "@paper-design/shaders-react";
 
 if (typeof window !== "undefined") {
@@ -626,6 +628,8 @@ export default function Home() {
 
   useGSAP(() => {
     if (!imgRef.current) return;
+    // Entrance: the outer column fades/rises once. The squircle frame
+    // itself (#abt-img) never gets a scrub tween — it stays fixed.
     gsap.fromTo(imgRef.current,
       { opacity: 0, y: 40 },
       {
@@ -642,23 +646,42 @@ export default function Home() {
       }
     );
 
-    // Scrubbed parallax: drift the whole framed portrait with scroll.
-    // NOTE: no scale here — rescaling a WebGL canvas every scroll tick
-    // forces resampling and makes the dots swim/blur. A plain y drift
-    // keeps the halftone grid crisp.
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: "#about",
-        start: "top 40%",
-        end: "bottom 20%",
-        scrub: 1.2,
+    if (prefersReducedMotion) return;
+
+    // Scroll-driven parallax of the SOURCE image inside a static halftone
+    // grid: the shader canvas stays fixed (speed 0, static uniforms) while
+    // we feed it a per-frame offsetY. Stable dot count => the pattern grid
+    // never swims; only the luminance sampled per cell changes => dots grow,
+    // shrink, and morph as if the photo slides behind a fixed screen.
+    // offsetY is in the shader's normalized-cover units, so ±0.06 stays
+    // fully covered by the image (fit="cover" overscans by construction).
+    // NOTE: HalftoneDots passes offsetY through only on prop change, so we
+    // memcpy the value straight into the live WebGL mount instead.
+    // paperShaderMount is public API on the mount div (see
+    // @paper-design/shaders ShaderMount.setUniforms + PaperShaderElement).
+    type ShaderHost = HTMLElement & {
+      paperShaderMount?: { setUniforms: (u: Record<string, number>) => void };
+    };
+    const setImageOffset = (v: number) => {
+      (imgRef.current?.querySelector<ShaderHost>(".halftone-shader"))
+        ?.paperShaderMount?.setUniforms({ u_offsetY: v });
+    };
+    const proxy = { v: 0.06 };
+    gsap.fromTo(proxy,
+      { v: 0.06 },
+      {
+        v: -0.06,
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#about",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1.2,
+          onUpdate: () => setImageOffset(proxy.v),
+        }
       }
-    });
-    tl.fromTo("#abt-img",
-      { y: 30 },
-      { y: -30, ease: "none", duration: 1 }
     );
-  }, { dependencies: [] });
+  }, { dependencies: [prefersReducedMotion] });
 
   return (
     // CHANGE THIS LINE: Swap 'overflow-hidden' for 'overflow-x-hidden'
@@ -824,8 +847,12 @@ export default function Home() {
               aria-label="Halftone portrait of Soham"
               className="rounded-md aspect-[4/5] w-[80%] max-w-[320px] md:w-[384px] md:max-w-none md:h-[480px] relative overflow-hidden bg-border/40"
             >
+              {/* Static shader mount: canvas never transforms. Scroll parallax
+                  is done INSIDE the shader by shifting u_offsetY, so the
+                  dot grid stays perfectly still while the sampled image
+                  drifts behind it. */}
               <HalftoneDots
-                className="about-image absolute inset-0 block h-full w-full"
+                className="halftone-shader absolute inset-0 block h-full w-full"
                 image="/prf-1.png"
                 colorBack={"#dfddc8"}
                 colorFront={"#191515"}
@@ -833,13 +860,15 @@ export default function Home() {
                 type="gooey"
                 grid="hex"
                 inverted={false}
-                size={0.2}
-                radius={1.15}
-                contrast={0.38}
+                size={0.35}
+                radius={1.12}
+                contrast={0.32}
                 grainMixer={0.18}
                 grainOverlay={0.2}
-                grainSize={0.45}
+                grainSize={0.25}
                 scale={1.1}
+                offsetX={0}
+                offsetY={0.06}
                 fit="cover"
                 speed={0}
                 frame={0}

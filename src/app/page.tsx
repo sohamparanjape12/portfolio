@@ -40,6 +40,7 @@ const PROJECTS = [
     desc: "An Interactive website for Haze, a concept agency. Features smooth GSAP animations and an editorial design.",
     tech: ["Next.js", "GSAP", "TailwindCSS", "TypeScript"],
     year: "2025",
+    link: "https://haze-agency.vercel.app/",
     img: "/haze.png"
   },
   {

@@ -36,6 +36,14 @@ const PROJECTS = [
   },
   {
     id: "02",
+    name: "Haze",
+    desc: "An Interactive website for Haze, a concept agency. Features smooth GSAP animations and an editorial design.",
+    tech: ["Next.js", "GSAP", "TailwindCSS", "TypeScript"],
+    year: "2025",
+    img: "/haze.png"
+  },
+  {
+    id: "03",
     name: "Ridge",
     desc: "A desktop harness to run CLI coding agents in parallel across git worktrees. Supports Claude Code, Codex, OpenCode and more.",
     tech: ["Tauri", "Rust", "React", "TypeScript"],
@@ -43,7 +51,7 @@ const PROJECTS = [
     img: "/ridge.png"
   },
   {
-    id: "03",
+    id: "04",
     name: "Arris Studio",
     desc: "Interactive website for Arris Studio, a concept studio.",
     tech: ["Next.js", "GSAP", "TailwindCSS"],
@@ -52,7 +60,7 @@ const PROJECTS = [
     img: "/arris.png"
   },
   {
-    id: "04",
+    id: "05",
     name: "CDCS Platform",
     desc: "Distributed computing for students to offload computations to idle lab machines.",
     tech: ["C", "Sockets", "Python", "PostgreSQL", "Next.js", "Node.js", "TailwindCSS"],
@@ -60,7 +68,7 @@ const PROJECTS = [
     img: "/cdcs.png"
   },
   {
-    id: "05",
+    id: "06",
     name: "Paranjape Opticals",
     desc: "Static website for Paranjape Opticals with custom animations and smooth scrolling.",
     tech: ["Next.js", "TailwindCSS", "Framer Motion"],
@@ -69,7 +77,7 @@ const PROJECTS = [
     img: "/po.png"
   },
   {
-    id: "06",
+    id: "07",
     name: "Devolution",
     desc: "Static event website for Google Developer Groups MITWPU's Devolution event.",
     tech: ["Next.js", "TailwindCSS", "Framer Motion"],
